@@ -50,7 +50,8 @@ function getPatientInfoElements() {
 
 let startTime = document.getElementById("startTime")
 let currentDate = document.getElementById("currentDate")
-var startBtn = document.getElementById("start-exec")
+let startBtn = document.getElementById("start-exec")
+let stopBtn = document.getElementById("stop-exec")
 
 let patientDOM
 let newPatient
@@ -58,8 +59,8 @@ let TQbutton
 let TQtimerStartButton
 let TQonTime
 let TQtimerId
-var timeLeft = 30;
-var TQtimer
+let timeLeft = 30;
+let TQtimer
 let timerStartTime
 let secondCounter = 0
 let started = false
@@ -84,8 +85,11 @@ function startExercise() {//activates after start button click, creates a new pa
 
     startTime.innerHTML = "Started at: " + dateAndTime
     started = true
+    stopBtn.addEventListener('click', () => {
+        started = false
 
-
+        startBtn.removeEventListener('click', startExercise)
+    })
 }
 
 function TQtimerStart(event) {//starts the TQ timer, removes the event listener, so it cant be pressed more than once
@@ -124,15 +128,14 @@ function updateClock() {//real time clock update, every second
         if (newPatient.TQon) {
             updateTimer()
         }
-    }
+        if (secondCounter >= 60) {
+            secondCounter = 0
+            newPatient.turned = (newPatient.turned - 0.033).toFixed(3)
+            newPatient.sysRR = (newPatient.sysRR -= 0.001).toFixed(3)
+            newPatient.ketamineIV = (newPatient.ketamineIV -= 0.462).toFixed(3)
 
-    if (secondCounter >= 60) {
-        secondCounter = 0
-        newPatient.turned = (newPatient.turned - 0.033).toFixed(3)
-        newPatient.sysRR = (newPatient.sysRR -= 0.001).toFixed(3)
-        newPatient.ketamineIV = (newPatient.ketamineIV -= 0.462).toFixed(3)
-
-        updatePatientDOM(newPatient, patientDOM)
+            updatePatientDOM(newPatient, patientDOM)
+        }
     }
 
     let dateAndTime = getDateAndTime()
