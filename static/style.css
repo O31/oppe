@@ -4,8 +4,11 @@
   justify-content: center;
 }
 
-.patient-info {
-  border: 1px solid black;
+.editButton {
+  background: url(../static/editButton.svg);
+  height: 16px;
+  width: 16px;
+  border: none;
 }
 
 .row {

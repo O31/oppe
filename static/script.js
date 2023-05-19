@@ -1,50 +1,8 @@
-class Patient {
-    constructor(sysRR, dRR, breathing, pulss, SpO2, temp, turned, turnedIV, ketamineEf, TQtime, TQon) {
-        this.sysRR = sysRR;
-        this.dRR = dRR;
-        this.breathing = breathing;
-        this.pulss = pulss;
-        this.SpO2 = SpO2;
-        this.temp = temp;
-        this.turned = turned;
-        this.ketamineIV = turnedIV;
-        this.ketamineEf = ketamineEf;
-        this.TQtime = TQtime;
-        this.TQon = TQon
-    }
-}
+import { inputForm, Patient, getPatientInfoElements, values } from "./script2.js";
 
-class PatientDOM {
-    constructor(sysRR, dRR, breathing, pulss, SpO2, temp, turned, turnedIV, ketamineEf, TQtime, TQon) {
-        this.sysRR = sysRR;
-        this.dRR = dRR;
-        this.breathing = breathing;
-        this.pulss = pulss;
-        this.SpO2 = SpO2;
-        this.temp = temp;
-        this.turned = turned;
-        this.ketamineIV = turnedIV;
-        this.ketamineEf = ketamineEf;
-        this.TQtime = TQtime;
-        this.TQon = TQon
-    }
-}
+inputForm()
 
-function getPatientInfoElements() {
-    let patientDom = new PatientDOM(
-        document.getElementById("sysRR"),
-        document.getElementById("diastRR"),
-        document.getElementById("breathing"),
-        document.getElementById("pulss"),
-        document.getElementById("SpO2"),
-        document.getElementById("temp"),
-        document.getElementById("turned"),
-        document.getElementById("turnedIV"),
-        document.getElementById("ketamineEf"),
-        document.getElementById("TQtime"),
-        document.getElementById("TQon"))
-    return patientDom
-}
+
 
 
 
@@ -64,16 +22,28 @@ let TQtimer
 let timerStartTime
 let secondCounter = 0
 let started = false
+let startingPulss
+let startingBreathing
 
 
-
-startBtn.addEventListener('click', startExercise)
+startBtn.addEventListener('click', startNew)
 updateClock()
 
-function startExercise() {//activates after start button click, creates a new patient, activates TQ buttons, 
-    newPatient = new Patient(120, 70, 12, 70, 98, 37.0, 1, 100, 1, 0, 0)//starts updating patient data
+function startNew() {
+    startExercise(new Patient(), false)
+}
+
+export function startExercise(patient, tqTimerStart) {//activates after start button click, creates a new patient, activates TQ buttons, 
+    let removeDiv = document.querySelector(".customPatient")
+    removeDiv.remove()
+
+    newPatient = patient
+    startingPulss = patient.pulss
+    startingBreathing = patient.breathing
+    createTable(patient)
+
     patientDOM = getPatientInfoElements()
-    updatePatientDOM(newPatient, patientDOM)
+    updatePatientDOM(patient, patientDOM)
 
     TQbutton = document.getElementById("TQbutton")
     TQtimerStartButton = document.getElementById("TQtimerStart")
@@ -87,9 +57,11 @@ function startExercise() {//activates after start button click, creates a new pa
     started = true
     stopBtn.addEventListener('click', () => {
         started = false
-
-        startBtn.removeEventListener('click', startExercise)
     })
+    startBtn.removeEventListener('click', startNew)
+    if (tqTimerStart) {
+        TQtimerStartButton.click()
+    }
 }
 
 function TQtimerStart(event) {//starts the TQ timer, removes the event listener, so it cant be pressed more than once
@@ -133,8 +105,24 @@ function updateClock() {//real time clock update, every second
             newPatient.turned = (newPatient.turned - 0.033).toFixed(3)
             newPatient.sysRR = (newPatient.sysRR -= 0.001).toFixed(3)
             newPatient.ketamineIV = (newPatient.ketamineIV -= 0.462).toFixed(3)
-
             updatePatientDOM(newPatient, patientDOM)
+        }
+
+        if (secondCounter % 15 == 0) {
+            startingBreathing = -startingBreathing
+            newPatient.breathing = randomIntFromInterval(startingBreathing, startingBreathing - 2)
+            if (newPatient.breathing < 0) {
+                newPatient.breathing = - newPatient.breathing
+            }
+            patientDOM["breathing"].innerHTML = newPatient.breathing
+        }
+        if (secondCounter % 5 == 0) {
+            startingPulss = -startingPulss
+            newPatient.pulss = randomIntFromInterval(startingPulss, startingPulss + 3)
+            if (newPatient.pulss < 0) {
+                newPatient.pulss = -newPatient.pulss
+            }
+            patientDOM["pulss"].innerHTML = newPatient.pulss
         }
     }
 
@@ -147,9 +135,7 @@ function updateClock() {//real time clock update, every second
 function getDateAndTime() {
     var now = new Date()
 
-    let newTime = now.getHours().toString().padStart(2, '0') + ":"
-        + now.getMinutes().toString().padStart(2, '0') + ":"
-        + now.getSeconds().toString().padStart(2, '0')
+    let newTime = formatTime(now.getHours(), now.getMinutes(), now.getSeconds())
 
     let newDate = [now.getDate().toString().padStart(2, '0'),
     now.getMonth().toString().padStart(2, '0')
@@ -159,6 +145,14 @@ function getDateAndTime() {
 }
 
 let elapsedTime = 0
+
+function formatTime(hours, minutes, seconds) {
+    let timeString = hours.toString().padStart(2, '0') + ':' +
+        minutes.toString().padStart(2, '0') + ':' +
+        seconds.toString().padStart(2, '0')
+
+    return timeString
+}
 
 function updateTimer() {
     let currentTime = new Date().getTime()
@@ -171,9 +165,56 @@ function updateTimer() {
     let seconds = Math.floor((elapsedTime % 60000) / 1000)
 
     // format output with leading zeros
-    let timeString = hours.toString().padStart(2, '0') + ':' +
-        minutes.toString().padStart(2, '0') + ':' +
-        seconds.toString().padStart(2, '0')
+    let timeString = formatTime(hours, minutes, seconds)
 
     patientDOM["TQtime"].innerHTML = timeString
+}
+
+function randomIntFromInterval(min, max) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+
+
+function createTable(patient) {
+    let patientInfo = document.querySelector(".patient-info")
+    patientInfo.style.border = "1px solid black"
+    let patientValues = Object.keys(patient)
+    // let editSvg = createEditSVG()
+    for (let i = 0; i < patientValues.length; i++) {
+        let rowDiv = document.createElement("div")
+        rowDiv.classList.add("row")
+        let colDiv = document.createElement("div")
+        colDiv.classList.add("column")
+        rowDiv.appendChild(colDiv)
+        let p = document.createElement("p")
+        p.textContent = values[i]
+        colDiv.appendChild(p)
+        patientInfo.appendChild(rowDiv)
+        let updateDiv = document.createElement("div")
+        updateDiv.classList.add("column")
+        let updateP = document.createElement("p")
+        let span = document.createElement("span")
+        span.innerHTML = patient[patientValues[i]]
+        span.id = patientValues[i]
+        updateP.appendChild(span)
+        updateDiv.appendChild(updateP)
+        let editButton = document.createElement("button")
+        editButton.classList.add("editButton")
+        editButton.addEventListener('click', () => {
+            let input = document.createElement("input")
+            input.type = "text"
+            let btn = document.createElement("button")
+            btn.innerHTML = "edit"
+            btn.addEventListener('click', () => {
+                input.remove()
+                btn.remove()
+                span.innerHTML = input.value
+            })
+            updateDiv.appendChild(input)
+            updateDiv.appendChild(btn)
+        })
+        updateDiv.appendChild(editButton)
+        rowDiv.appendChild(updateDiv)
+    }
 }
