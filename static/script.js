@@ -35,32 +35,40 @@ function startNew() {
 
 export function startExercise(patient, tqTimerStart) {//activates after start button click, creates a new patient, activates TQ buttons, 
     let removeDiv = document.querySelector(".customPatient")
-    removeDiv.remove()
+    let weigth = document.querySelector(".weigth")
+    let weigthParent = document.querySelector(".weigthParent")
+    if (!isNaN(parseInt(weigth.value))) {
+        weigthParent.innerHTML = "Patsiendi kaal: " + weigth.value + "kg"
+        weigth.remove()
+        removeDiv.remove()
+        newPatient = patient
+        startingPulss = patient.pulss
+        startingBreathing = patient.breathing
+        createTable(patient)
 
-    newPatient = patient
-    startingPulss = patient.pulss
-    startingBreathing = patient.breathing
-    createTable(patient)
+        patientDOM = getPatientInfoElements()
+        updatePatientDOM(patient, patientDOM)
 
-    patientDOM = getPatientInfoElements()
-    updatePatientDOM(patient, patientDOM)
+        TQbutton = document.getElementById("TQbutton")
+        TQtimerStartButton = document.getElementById("TQtimerStart")
+        TQonTime = document.getElementById("TQonTime")
+        TQtimer = document.getElementById('TQtimer');
 
-    TQbutton = document.getElementById("TQbutton")
-    TQtimerStartButton = document.getElementById("TQtimerStart")
-    TQonTime = document.getElementById("TQonTime")
-    TQtimer = document.getElementById('TQtimer');
+        TQtimerStartButton.addEventListener('click', TQtimerStart)
+        let dateAndTime = getDateAndTime()
 
-    TQtimerStartButton.addEventListener('click', TQtimerStart)
-    let dateAndTime = getDateAndTime()
-
-    startTime.innerHTML = "Started at: " + dateAndTime
-    started = true
-    stopBtn.addEventListener('click', () => {
-        started = false
-    })
-    startBtn.removeEventListener('click', startNew)
-    if (tqTimerStart) {
-        TQtimerStartButton.click()
+        startTime.innerHTML = "Started at: " + dateAndTime
+        started = true
+        stopBtn.addEventListener('click', () => {
+            started = false
+        })
+        startBtn.removeEventListener('click', startNew)
+        if (tqTimerStart) {
+            TQtimerStartButton.click()
+        }
+    } else {
+        weigthParent.innerHTML = "Use only numbers"
+        weigthParent.appendChild(weigth)
     }
 }
 
@@ -180,7 +188,7 @@ function createTable(patient) {
     let patientInfo = document.querySelector(".patient-info")
     patientInfo.style.border = "1px solid black"
     let patientValues = Object.keys(patient)
-    // let editSvg = createEditSVG()
+
     for (let i = 0; i < patientValues.length; i++) {
         let rowDiv = document.createElement("div")
         rowDiv.classList.add("row")
@@ -209,11 +217,7 @@ function createTable(patient) {
             const btnEventListener = e => {
                 input.remove()
                 btn.remove()
-                // console.log(typeof parseInt(input.value))
                 let newValue = parseInt(input.value)
-                // console.log(input.value)
-                // console.log(typeof input.value === 'number')
-                console.log(newValue, typeof newValue)
                 if (!isNaN(newValue)) {
                     span.innerHTML = input.value
                 }

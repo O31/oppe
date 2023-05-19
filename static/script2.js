@@ -81,7 +81,7 @@ export function inputForm() {
     form.addEventListener('submit', (event) => {
         let tqFromStart = false
         event.preventDefault()
-        let customValues = document.querySelectorAll("input")
+        let customValues = document.querySelectorAll("input:not(#weigthParent)")
         let newPatient = new Patient()
         for (let i = 0; i < customValues.length; i++) {
             let value = customValues[i].id.replace("Form", "")
