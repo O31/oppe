@@ -33,11 +33,33 @@ function startNew() {
     startExercise(new Patient(), false)
 }
 
-export function startExercise(patient, tqTimerStart) {//activates after start button click, creates a new patient, activates TQ buttons, 
+export function startExercise(patient) {//activates after start button click, creates a new patient, activates TQ buttons, 
     let removeDiv = document.querySelector(".customPatient")
     let weigth = document.querySelector(".weigth")
     let weigthParent = document.querySelector(".weigthParent")
+    let tqTimerFromStart = document.querySelector("#tqFromStart")
+    let TQparent = document.querySelector(".TQ-buttons")
+    let checkBoxLabel = document.querySelector("#checkBoxLabel")
+    TQtimerStartButton = document.createElement("button")
+    TQtimerStartButton.innerHTML = "TQ timer start"
+    TQtimerStartButton.id = "TQtimerStart"
+    TQbutton = document.createElement("button")
+    TQbutton.id = "TQbutton"
+    TQbutton.innerHTML = "TQ on"
+    TQparent.appendChild(TQtimerStartButton)
+    TQparent.appendChild(TQbutton)
+    if (tqTimerFromStart.checked) {
+        TQtimerStartButton.addEventListener('click', TQtimerStart)
+        TQtimerStartButton.click()
+        TQtimerStartButton.remove()
+    } else {
+        TQtimerStartButton.addEventListener('click', TQtimerStart)
+    }
+
     if (!isNaN(parseInt(weigth.value))) {
+        tqTimerFromStart.remove()
+        checkBoxLabel.remove()
+
         weigthParent.innerHTML = "Patsiendi kaal: " + weigth.value + "kg"
         weigth.remove()
         removeDiv.remove()
@@ -54,7 +76,6 @@ export function startExercise(patient, tqTimerStart) {//activates after start bu
         TQonTime = document.getElementById("TQonTime")
         TQtimer = document.getElementById('TQtimer');
 
-        TQtimerStartButton.addEventListener('click', TQtimerStart)
         let dateAndTime = getDateAndTime()
 
         startTime.innerHTML = "Started at: " + dateAndTime
@@ -63,9 +84,7 @@ export function startExercise(patient, tqTimerStart) {//activates after start bu
             started = false
         })
         startBtn.removeEventListener('click', startNew)
-        if (tqTimerStart) {
-            TQtimerStartButton.click()
-        }
+
     } else {
         weigthParent.innerHTML = "please enter weight in number <br>"
         weigthParent.appendChild(weigth)

@@ -79,37 +79,22 @@ export function inputForm() {
     patientInfo.appendChild(newDiv)
 
     form.addEventListener('submit', (event) => {
-        let tqFromStart = false
         event.preventDefault()
-        let customValues = document.querySelectorAll("input:not(#weigthParent)")
+        let customValues = document.querySelectorAll("input:not(.weigth #tqFromStart)")
         let newPatient = new Patient()
         for (let i = 0; i < customValues.length; i++) {
             let value = customValues[i].id.replace("Form", "")
-            if (value == "tqFromStart") {
-                if (customValues[i].checked) {
-                    tqFromStart = true
-                }
-            }
             if (customValues[i].value != "" && value != "tqFromStart") {
                 newPatient[value] = parseInt(customValues[i].value)
             }
         }
-        startExercise(newPatient, tqFromStart)
+        startExercise(newPatient)
     })
 
 }
 
 function createInputs(parent) {
     let newPatient = new Patient()
-    let tqStartInput = document.createElement("input")
-    let tqStartLabel = document.createElement("label")
-    tqStartInput.id = "tqFromStart"
-    tqStartInput.type = "checkbox"
-    tqStartLabel.setAttribute("for", tqStartInput.id)
-    tqStartLabel.innerHTML = "Start exercise with TQ timer"
-    parent.appendChild(tqStartLabel)
-    parent.appendChild(tqStartInput)
-
 
     let patientValues = Object.keys(newPatient)
     for (let i = 0; i < patientValues.length; i++) {
