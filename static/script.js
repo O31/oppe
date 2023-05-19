@@ -67,7 +67,7 @@ export function startExercise(patient, tqTimerStart) {//activates after start bu
             TQtimerStartButton.click()
         }
     } else {
-        weigthParent.innerHTML = "Use only numbers"
+        weigthParent.innerHTML = "please enter weight in number <br>"
         weigthParent.appendChild(weigth)
     }
 }
