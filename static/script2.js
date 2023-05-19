@@ -94,7 +94,7 @@ export function inputForm() {
                 newPatient[value] = parseInt(customValues[i].value)
             }
         }
-        startExercise("", newPatient, tqFromStart)
+        startExercise(newPatient, tqFromStart)
     })
 
 }
