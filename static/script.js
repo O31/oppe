@@ -201,19 +201,31 @@ function createTable(patient) {
         updateDiv.appendChild(updateP)
         let editButton = document.createElement("button")
         editButton.classList.add("editButton")
-        editButton.addEventListener('click', () => {
+        const editButtonListener = e => {
             let input = document.createElement("input")
             input.type = "text"
             let btn = document.createElement("button")
             btn.innerHTML = "edit"
-            btn.addEventListener('click', () => {
+            const btnEventListener = e => {
                 input.remove()
                 btn.remove()
-                span.innerHTML = input.value
-            })
+                // console.log(typeof parseInt(input.value))
+                let newValue = parseInt(input.value)
+                // console.log(input.value)
+                // console.log(typeof input.value === 'number')
+                console.log(newValue, typeof newValue)
+                if (!isNaN(newValue)) {
+                    span.innerHTML = input.value
+                }
+                btn.removeEventListener('click', btnEventListener)
+                editButton.addEventListener('click', editButtonListener)
+            }
+            btn.addEventListener('click', btnEventListener)
+            editButton.removeEventListener('click', editButtonListener)
             updateDiv.appendChild(input)
             updateDiv.appendChild(btn)
-        })
+        }
+        editButton.addEventListener('click', editButtonListener)
         updateDiv.appendChild(editButton)
         rowDiv.appendChild(updateDiv)
     }
